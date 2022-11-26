@@ -6,6 +6,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
+import CommentIcon from '@mui/icons-material/Comment';
+
 
 /*
     This is a card in our list of top 5 lists. It lets select
@@ -61,8 +63,24 @@ function ListCard(props) {
             toggleEdit();
         }
     }
+
     function handleUpdateText(event) {
         setText(event.target.value);
+    }
+
+    function handlePublish(event, id){
+        event.stopPropagation();
+        store.publish(id);
+    }
+
+    function handleDuplicate(event, id){
+        event.stopPropagation();
+        store.duplicatePlaylist(id);
+    }
+
+    function handleAddComment(event, id){
+        event.stopPropagation();
+        store.addComment(id, "UDYR sucks after reworks");
     }
 
     let selectClass = "unselected-list-card";
@@ -85,6 +103,27 @@ function ListCard(props) {
             }}
         >
             <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
+            <Box sx={{ p: 1 }}>
+                <IconButton onClick={(event) => {
+                        handleAddComment(event, idNamePair._id)
+                    }} aria-label='edit'>
+                    <CommentIcon style={{fontSize:'48pt'}} />
+                </IconButton>
+            </Box>
+            <Box sx={{ p: 1 }}>
+                <IconButton onClick={(event) => {
+                        handleDuplicate(event, idNamePair._id)
+                    }} aria-label='edit'>
+                    <EditIcon style={{fontSize:'48pt', backgroundColor: 'green'}} />
+                </IconButton>
+            </Box>
+            <Box sx={{ p: 1 }}>
+                <IconButton onClick={(event) => {
+                        handlePublish(event, idNamePair._id)
+                    }} aria-label='edit'>
+                    <EditIcon style={{fontSize:'48pt'}} />
+                </IconButton>
+            </Box>
             <Box sx={{ p: 1 }}>
                 <IconButton onClick={handleToggleEdit} aria-label='edit'>
                     <EditIcon style={{fontSize:'48pt'}} />

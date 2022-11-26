@@ -27,7 +27,8 @@ export const createPlaylist = (newListName, newSongs, userEmail) => {
         // SPECIFY THE PAYLOAD
         name: newListName,
         songs: newSongs,
-        ownerEmail: userEmail
+        ownerEmail: userEmail,
+        published: false
     })
 }
 export const deletePlaylistById = (id) => api.delete(`/playlist/${id}`)
@@ -39,13 +40,31 @@ export const updatePlaylistById = (id, playlist) => {
         playlist : playlist
     })
 }
+export const publishPlaylist = (id) => api.put(`/playlistpub/${id}`)
+
+export const duplicatePlaylist = (id, newListName, userEmail) => {
+    return api.post(`/duplicateplaylist/${id}`, {
+        // SPECIFY THE PAYLOAD
+        name: newListName,
+        email: userEmail
+    })
+}
+
+export const addComment = (id, comment) => {
+    return api.post(`/addcomment/${id}`, {
+        comment: comment,
+    })
+}
 
 const apis = {
     createPlaylist,
     deletePlaylistById,
     getPlaylistById,
     getPlaylistPairs,
-    updatePlaylistById
+    updatePlaylistById,
+    publishPlaylist,
+    duplicatePlaylist,
+    addComment,
 }
 
 export default apis

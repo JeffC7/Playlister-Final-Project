@@ -11,9 +11,15 @@ const auth = require('../auth')
 
 router.post('/playlist', auth.verify, PlaylistController.createPlaylist)
 router.delete('/playlist/:id', auth.verify, PlaylistController.deletePlaylist)
+router.put('/playlistpub/:id', auth.verify, PlaylistController.publishPlaylist)
 router.get('/playlist/:id', auth.verify, PlaylistController.getPlaylistById)
 router.get('/playlistpairs', auth.verify, PlaylistController.getPlaylistPairs)
+// router.get('/playlistList', auth.verify, PlaylistController.getPlaylistList)
 router.get('/playlists', auth.verify, PlaylistController.getPlaylists)
 router.put('/playlist/:id', auth.verify, PlaylistController.updatePlaylist)
+router.post('/duplicateplaylist/:id', auth.verify, PlaylistController.duplicatePlaylist)
+router.post('/addcomment/:id', auth.verify, PlaylistController.addComment)
+// router.get('/searchplaylistforuser/:username', auth.verify, PlaylistController.searchPlaylistForUser)
+// router.get('/searchallplaylists/:search', auth.verify, PlaylistController.searchAllPlaylists)
 
 module.exports = router

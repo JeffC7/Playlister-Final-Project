@@ -146,6 +146,7 @@ getPlaylistPairs = async (req, res) => {
         asyncFindList(user.email);
     }).catch(err => console.log(err))
 }
+
 getPlaylists = async (req, res) => {
     await Playlist.find({}, (err, playlists) => {
         if (err) {
@@ -218,11 +219,190 @@ updatePlaylist = async (req, res) => {
         asyncFindUser(playlist);
     })
 }
+
+publishPlaylist = async (req, res) => {
+    // const body = req.body
+    console.log("PublishPlaylist");
+
+    Playlist.findOne({ _id: req.params.id }, (err, playlist) => {
+        console.log("playlist found: " + JSON.stringify(playlist));
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'Playlist not found!',
+            })
+        }
+
+        // publish the playlist
+        async function asyncFindUserAndPublish(list) {
+            await User.findOne({ email: list.ownerEmail }, (err, user) => {
+                console.log("user._id: " + user._id);
+                console.log("req.userId: " + req.userId);
+                if (user._id == req.userId) {
+
+
+                    list.published = true;
+                    list.likes = 0;
+                    list.dislikes = 0;
+                    list.listens = 0;
+                    list.comments = [];
+                    list
+                        .save()
+                        .then(() => {
+                            console.log("SUCCESS!!!");
+                            return res.status(200).json({
+                                success: true,
+                                id: list._id,
+                                message: 'Playlist published!',
+                            })
+                        })
+                        .catch(error => {
+                            console.log("FAILURE: " + JSON.stringify(error));
+                            return res.status(404).json({
+                                error,
+                                message: 'Playlist not published!',
+                            })
+                        })
+                }
+                else {
+                    console.log("incorrect user!");
+                    return res.status(400).json({ success: false, description: "authentication error" });
+                }
+            });
+        }
+        asyncFindUserAndPublish(playlist);
+    })
+}
+
+duplicatePlaylist = (req, res) => {
+    const body = req.body
+    console.log("duplicatePlaylist: " + JSON.stringify(body));
+
+    if (!body) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide a body to update',
+        })
+    }
+
+    Playlist.findOne({ _id: req.params.id }, (err, playlist) => {
+        console.log("playlist found: " + JSON.stringify(playlist));
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'Playlist not found!',
+            })
+        }
+
+        // duplicate the playlist
+        async function asyncDuplicatePlaylist(list) {
+            User.findOne({ _id: req.userId }, (err, user) => {
+
+                async function asyncDuplicatePlaylist2(list, user) {
+                    Playlist.find({name: new RegExp('^' + list.name)}, 'name', function (err, names){
+                        const duplicate = new Playlist();
+                        duplicate.songs = list.songs;
+                        duplicate.ownerEmail = req.body.email;
+                        var newName = list.name;
+                        
+                        var nameFound = names[names.length-1].name;
+                        if(nameFound == list.name) 
+                            newName = nameFound + "1"
+                        else {
+                            newName = list.name + (parseInt(nameFound.charAt(nameFound.length-1)) + 1);
+                            console.log("Dasdas");
+                        }
+
+                        duplicate.name = newName;
+                        duplicate.published = false;
+        
+                        user.playlists.push(duplicate._id);
+                        user
+                            .save()
+                            .then(() => {
+                                duplicate
+                                .save()
+                                .then(() => {
+                                    console.log("SUCCESS!!!");
+                                    return res.status(200).json({
+                                        success: true,
+                                        playlist: duplicate,
+                                    })
+                                })
+                                .catch(error => {
+                                    console.log("FAILURE: " + JSON.stringify(error));
+                                    return res.status(404).json({
+                                        error,
+                                        message: 'Playlist not duplicated!',
+                                    })
+                                })
+                            })
+                    })
+                }
+                asyncDuplicatePlaylist2(list, user)
+            })
+        }
+        asyncDuplicatePlaylist(playlist);
+    })
+}
+
+addComment = async (req, res) => {
+    const body = req.body;
+    console.log("Add a comment: " + JSON.stringify(body));
+
+    if (!body) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide a body to add a comment',
+        })
+    }
+
+    Playlist.findOne({ _id: req.params.id }, (err, playlist) => {
+        console.log("playlist found: " + JSON.stringify(playlist));
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'Playlist not found!',
+            })
+        }
+
+        // Add a comment
+        async function asyncAddComment(list) {
+            await User.findOne({ _id: req.userId }, (err, user) => {
+                var newComment = {userName: user.userName, comment: req.body.comment}
+                list.comments.push(newComment);
+                list
+                    .save()
+                    .then(() => {
+                        console.log("SUCCESS!!!");
+                        return res.status(200).json({
+                            success: true,
+                            comments: list.comments,
+                            message: 'Comment added!',
+                        })
+                    })
+                    .catch(error => {
+                        console.log("FAILURE: " + JSON.stringify(error));
+                        return res.status(404).json({
+                            error,
+                            message: 'Comment not published!',
+                        })
+                    })
+            });
+        }
+        asyncAddComment(playlist);
+    })
+}
+
+
 module.exports = {
     createPlaylist,
     deletePlaylist,
     getPlaylistById,
     getPlaylistPairs,
     getPlaylists,
-    updatePlaylist
+    updatePlaylist,
+    publishPlaylist,
+    duplicatePlaylist,
+    addComment,
 }

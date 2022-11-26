@@ -553,7 +553,55 @@ function GlobalStoreContextProvider(props) {
             payload: null
         });
     }
+    store.publish = function (id) {
+        async function publishList() {
+            let response = await api.publishPlaylist(id);
+            if (response.data.success) {
+                console.log("success");
+            }
+        }
+        publishList(id);
+    }
 
+    store.duplicatePlaylist = function (id) {
+        async function duplicateList() {
+            let newListName = "Untitled" + store.newListCounter;
+            const response = await api.duplicatePlaylist(id, newListName, auth.user.email);
+            console.log("duplicatePlaylist response: " + response);
+            if (response.status === 200) {
+                tps.clearAllTransactions();
+                let newList = response.data.playlist;
+                storeReducer({
+                    type: GlobalStoreActionType.CREATE_NEW_LIST,
+                    payload: newList
+                }
+                );
+    
+                // IF IT'S A VALID LIST THEN LET'S START EDITING IT
+                history.push("/playlist/" + newList._id);
+            }
+            else {
+                console.log("API FAILED TO DUPLICATE A NEW LIST");
+            }
+        }
+        duplicateList(id);
+    }
+
+    store.addComment = function (id, comment) {
+        async function asyncAddComment(id, comment) {
+            const response = await api.addComment(id, comment);
+            console.log("asyncAddComment response: " + response);
+            if (response.status === 200) {
+                console.log(response.data.comments);
+
+            }
+            else {
+                console.log("API FAILED TO ADD COMMENT");
+            }
+        }
+        asyncAddComment(id, comment);
+    }
+    
     return (
         <GlobalStoreContext.Provider value={{
             store
