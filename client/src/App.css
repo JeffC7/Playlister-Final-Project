@@ -127,12 +127,26 @@ body {
 
 #list-selector-heading {
   position: absolute;
+  left: 20px;
+  top: 10%;
+  /* width: 50%; */
+  height: 10%;
+  text-align: center;
+  /* font-size: 100%; */
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#list-selector-footing {
+  position: absolute;
   left: 25%;
-  top: 0%;
+  bottom: 0%;
   width: 50%;
   height: 10%;
   text-align: center;
-  font-size: 24pt;
+  /* font-size: 100%; */
   font-weight: bold;
   display: flex;
   align-items: center;
@@ -146,21 +160,45 @@ body {
 #list-selector-list {
   position: absolute;
   left: 0%;
-  margin-top: 5%;
-  top: 10%;
-  width: 100%;
-  height: 90%;
+  /* margin-top: 5%; */
+  top: 20%;
+  width: 60%;
+  height: 70%;
   display: flex;
   flex-direction: column;
-  overflow: scroll;
+  overflow-y: scroll;
+}
+
+#list-selector-side {
+  position: absolute;
+  left: 60%;
+  top: 20%;
+  width: 40%;
+  height: 70%;
+  display: flex;
+  /* align-items: center; */
+  /* justify-content: center; */
+}
+
+#list-side-buttons {
+  position: absolute;
+  justify-content: start;
+  top: 0;
+}
+
+#list-side-content {
+  border: 1px solid black;
+  position: absolute;
+  top: 6%;
+  /* width: 100%; */
 }
 
 .list-card,
 .selected-list-card,
 .unselected-list-card {
-  font-size: 18pt;
+  /* font-size: 18pt; */
   margin: 10px;
-  padding: 20px;
+  /* padding: 20px; */
   border-radius: 25px;
 }
 

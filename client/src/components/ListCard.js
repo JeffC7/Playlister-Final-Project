@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import { GlobalStoreContext } from '../store'
 import Box from '@mui/material/Box';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -7,6 +7,12 @@ import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
 import CommentIcon from '@mui/icons-material/Comment';
+import Grid from '@mui/material/Grid';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
+import { fontSize } from '@mui/system';
+import WorkspaceScreen from './WorkspaceScreen';
 
 
 /*
@@ -20,10 +26,10 @@ function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
     const [editActive, setEditActive] = useState(false);
     const [text, setText] = useState("");
+    const [listOpened, setListOpened] = useState(false);
     const { idNamePair, selected } = props;
 
     function handleLoadList(event, id) {
-        console.log("handleLoadList for " + id);
         if (!event.target.disabled) {
             let _id = event.target.id;
             if (_id.indexOf('list-card-text-') >= 0)
@@ -35,6 +41,13 @@ function ListCard(props) {
             store.setCurrentList(id);
         }
     }
+    
+    useEffect(() => {
+        if(store.currentList){
+            setListOpened(true);
+        }
+    
+    }, [store]);
 
     function handleToggleEdit(event) {
         event.stopPropagation();
@@ -83,6 +96,10 @@ function ListCard(props) {
         store.addComment(id, "UDYR sucks after reworks");
     }
 
+    function openCurrentList(event, id){
+        store.setCurrentList(id);
+    }
+
     let selectClass = "unselected-list-card";
     if (selected) {
         selectClass = "selected-list-card";
@@ -95,15 +112,15 @@ function ListCard(props) {
         <ListItem
             id={idNamePair._id}
             key={idNamePair._id}
-            sx={{ marginTop: '15px', display: 'flex', p: 1 }}
-            style={{ width: '100%', fontSize: '48pt' }}
+            sx={{ display: 'flex', p: 1 }}
+            style={{ width: '100%', fontSize: '20pt', border: '1px solid black', backgroundColor: 'Grey', borderRadius: "25px", marginBottom: "1vh" }}
             button
-            onClick={(event) => {
-                handleLoadList(event, idNamePair._id)
-            }}
+            // onClick={(event) => {
+            //     handleLoadList(event, idNamePair._id)
+            // }}
         >
-            <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
-            <Box sx={{ p: 1 }}>
+            {/* <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box> */}
+            {/* <Box sx={{ p: 1 }}>
                 <IconButton onClick={(event) => {
                         handleAddComment(event, idNamePair._id)
                     }} aria-label='edit'>
@@ -123,8 +140,8 @@ function ListCard(props) {
                     }} aria-label='edit'>
                     <EditIcon style={{fontSize:'48pt'}} />
                 </IconButton>
-            </Box>
-            <Box sx={{ p: 1 }}>
+            </Box> */}
+            {/* <Box sx={{ p: 1 }}>
                 <IconButton onClick={handleToggleEdit} aria-label='edit'>
                     <EditIcon style={{fontSize:'48pt'}} />
                 </IconButton>
@@ -135,7 +152,41 @@ function ListCard(props) {
                     }} aria-label='delete'>
                     <DeleteIcon style={{fontSize:'48pt'}} />
                 </IconButton>
-            </Box>
+            </Box> */}
+                <Grid container rowSpacing={0} columnSpacing={{ xs: 1 }}>
+                    <Grid container item spacing={3} top="0%">
+                        <Grid item xs={9} fontSize="small">
+                            <h3 style={{margin: "0", fontSize: '20pt'}}>{idNamePair.name}</h3>
+                        </Grid>
+                        <IconButton onClick={(event) => {}}>
+                            <ThumbDownIcon style={{marginTop: "10pt", height: "100%"}} fontSize="small" />
+                        </IconButton>
+                        <IconButton onClick={(event) => {}}>
+                            <ThumbUpAltIcon style={{marginTop: "10pt", height: "100%"}}  />
+                        </IconButton>
+                    </Grid>
+                    <Grid container item spacing={3}>
+                        <Grid item padding="0" xs={2} fontSize="small">
+                            <p style={{margin: "0", fontSize: '8pt'}}>By: </p>
+                        </Grid>
+                    </Grid>
+                    {listOpened && store.currentList._id == idNamePair._id &&
+                       <WorkspaceScreen />
+                    }
+                    <Grid container item spacing={3}>
+                        <Grid item xs={6}>
+                            <p style={{height: "100%", fontSize: '8pt'}}>Published: </p>
+                        </Grid>
+                        <Grid item xs={4} fontSize="small">
+                            <p style={{height: "100%", fontSize: '8pt'}}>Listens: </p>
+                        </Grid>
+                        <Grid item xs={2} display="flex" alignItems="center" justifyContent="center">
+                            <IconButton style={{height: "100%"}} onClick={(event) => { openCurrentList(event, idNamePair._id)}}>
+                                <KeyboardDoubleArrowDownIcon />
+                            </IconButton>
+                        </Grid>
+                    </Grid>
+                </Grid>
         </ListItem>
 
     if (editActive) {

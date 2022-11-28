@@ -42,7 +42,7 @@ function WorkspaceScreen() {
         {auth.loggedIn && 
             <List 
                 id="playlist-cards" 
-                sx={{ width: '100%', bgcolor: 'background.paper' }}
+                // sx={{ width: '80%'}}
             >
                 {
                     store.currentList.songs.map((song, index) => (
