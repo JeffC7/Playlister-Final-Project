@@ -116,24 +116,24 @@ function GlobalStoreContextProvider(props) {
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
             case GlobalStoreActionType.LOAD_ID_NAME_PAIRS: {
-                return setStore({
+                return setStore((curstore) => ({
                     currentModal : CurrentModal.NONE,
                     idNamePairs: payload,
                     currentList: null,
                     currentSongIndex: -1,
                     currentSong: null,
-                    newListCounter: store.newListCounter,
+                    newListCounter: curstore.newListCounter,
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null
-                });
+                }));
             }
             // PREPARE TO DELETE A LIST
             case GlobalStoreActionType.MARK_LIST_FOR_DELETION: {
                 return setStore({
                     currentModal : CurrentModal.DELETE_LIST,
                     idNamePairs: store.idNamePairs,
-                    currentList: null,
+                    currentList: store.currentList,
                     currentSongIndex: -1,
                     currentSong: null,
                     newListCounter: store.newListCounter,
@@ -272,14 +272,14 @@ function GlobalStoreContextProvider(props) {
             payload: {}
         });
         tps.clearAllTransactions();
-        history.push("/");
+        // history.push("/");
     }
 
     // THIS FUNCTION CREATES A NEW LIST
     store.createNewList = async function () {
         let newListName = "Untitled" + store.newListCounter;
         const response = await api.createPlaylist(newListName, [], auth.user.email);
-        console.log("createNewList response: " + response);
+        console.log("createNewList response: " + store.newListCounter);
         if (response.status === 201) {
             tps.clearAllTransactions();
             let newList = response.data.playlist;
@@ -290,7 +290,8 @@ function GlobalStoreContextProvider(props) {
             );
 
             // IF IT'S A VALID LIST THEN LET'S START EDITING IT
-            history.push("/playlist/" + newList._id);
+            // history.push("/");
+            store.loadIdNamePairs();
         }
         else {
             console.log("API FAILED TO CREATE A NEW LIST");
@@ -340,7 +341,7 @@ function GlobalStoreContextProvider(props) {
             let response = await api.deletePlaylistById(id);
             if (response.data.success) {
                 store.loadIdNamePairs();
-                history.push("/");
+                // history.push("/");
             }
         }
         processDelete(id);

@@ -38,6 +38,7 @@ createPlaylist = (req, res) => {
                         })
                     })
                     .catch(error => {
+
                         return res.status(400).json({
                             errorMessage: 'Playlist Not Created!'
                         })
@@ -239,9 +240,7 @@ publishPlaylist = async (req, res) => {
                 console.log("user._id: " + user._id);
                 console.log("req.userId: " + req.userId);
                 if (user._id == req.userId) {
-
-
-                    list.published = true;
+                    list.published =  new Date(Date.now()).toDateString().substring(4);
                     list.likes = 0;
                     list.dislikes = 0;
                     list.listens = 0;

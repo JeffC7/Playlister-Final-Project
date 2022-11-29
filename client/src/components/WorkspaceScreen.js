@@ -7,6 +7,9 @@ import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import { GlobalStoreContext } from '../store/index.js'
 import AuthContext from '../auth';
+import Grid from '@mui/material/Grid';
+import AddIcon from '@mui/icons-material/Add';
+
 /*
     This React component lets us edit a loaded list, which only
     happens when we are on the proper route.
@@ -21,6 +24,10 @@ function WorkspaceScreen() {
     const modalClick = () => {
         setShow(false);
         auth.logoutUser();
+    }
+
+    function handleAddNewSong() {
+        store.addNewSong();
     }
 
 
@@ -42,7 +49,7 @@ function WorkspaceScreen() {
         {auth.loggedIn && 
             <List 
                 id="playlist-cards" 
-                // sx={{ width: '80%'}}
+                sx={{ width: '100%', marginLeft: '2vw'}}
             >
                 {
                     store.currentList.songs.map((song, index) => (
@@ -54,6 +61,19 @@ function WorkspaceScreen() {
                         />
                     ))  
                 }
+                        <Grid
+                            container
+                            className="list-card unselected-list-card"
+                            onClick={handleAddNewSong}
+                            direction="row"
+                            justifyContent="center"
+                            alignItems="center"
+                            columnSpacing={2}
+                        >
+                                <Grid item>
+                                    <AddIcon fontSize='medium'/>
+                                </Grid>
+                        </Grid>
             </List>
         }
         { modalJSX }      

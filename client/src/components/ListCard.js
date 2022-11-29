@@ -11,8 +11,10 @@ import Grid from '@mui/material/Grid';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
+import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import { fontSize } from '@mui/system';
 import WorkspaceScreen from './WorkspaceScreen';
+import Button from '@mui/material/Button'
 
 
 /*
@@ -100,6 +102,21 @@ function ListCard(props) {
         store.setCurrentList(id);
     }
 
+    function closeCurrentList(event){
+        setListOpened(false);
+        store.closeCurrentList();
+        console.log("ddydy");
+        console.log(store.currentList);
+        // store.closeCurrentList();
+    }
+
+    function handleUndo() {
+        store.undo();
+    }
+    function handleRedo() {
+        store.redo();
+    }
+
     let selectClass = "unselected-list-card";
     if (selected) {
         selectClass = "selected-list-card";
@@ -155,8 +172,8 @@ function ListCard(props) {
             </Box> */}
                 <Grid container rowSpacing={0} columnSpacing={{ xs: 1 }}>
                     <Grid container item spacing={3} top="0%">
-                        <Grid item xs={9} fontSize="small">
-                            <h3 style={{margin: "0", fontSize: '20pt'}}>{idNamePair.name}</h3>
+                        <Grid item xs={10} fontSize="small">
+                            <h3 style={{margin: "0px 10px", fontSize: '20pt'}}>{idNamePair.name}</h3>
                         </Grid>
                         <IconButton onClick={(event) => {}}>
                             <ThumbDownIcon style={{marginTop: "10pt", height: "100%"}} fontSize="small" />
@@ -167,15 +184,75 @@ function ListCard(props) {
                     </Grid>
                     <Grid container item spacing={3}>
                         <Grid item padding="0" xs={2} fontSize="small">
-                            <p style={{margin: "0", fontSize: '8pt'}}>By: </p>
+                            <p style={{margin: "0px 10px", fontSize: '8pt'}}>By: </p>
                         </Grid>
                     </Grid>
-                    {listOpened && store.currentList._id == idNamePair._id &&
-                       <WorkspaceScreen />
+                    {listOpened && store.currentList !== null && store.currentList._id == idNamePair._id &&
+                        <Grid container item>
+                            <Grid item padding="0" xs={10} fontSize="15pt">
+                                <WorkspaceScreen />
+                            </Grid>
+
+                        </Grid>
                     }
+                    {listOpened && store.currentList !== null && store.currentList._id == idNamePair._id &&
+                        <Grid container item spacing={5}>
+                            <Grid item xs={2} display="flex" justifyContent="end">
+                                <Button 
+                                    disabled={!store.canUndo()}
+                                    id='add-song-button'
+                                    onClick={handleUndo}
+                                    className='sideButtons' 
+                                    variant="outlined"  
+                                    sx={{ border: '1px solid black', color: 'black', backgroundColor: 'white' }}>Undo</Button>
+                            </Grid>
+                            <Grid item xs={2} display="flex" justifyContent="end">
+                                <Button 
+                                    disabled={!store.canRedo()}
+                                    id='redo-button'
+                                    onClick={handleRedo} 
+                                    className='sideButtons' 
+                                    variant="outlined"  
+                                    sx={{ border: '1px solid black', color: 'black', backgroundColor: 'white'  }} >Redo</Button>
+                            </Grid>
+                            <Grid item xs={2.5} display="flex" justifyContent="end">
+                                <Button onClick={(event) => {
+                                            handlePublish(event, idNamePair._id)
+                                        }} 
+                                        className='sideButtons' variant="outlined"  sx={{ border: '1px solid black', color: 'black', backgroundColor: 'white'  }}>
+                                            Publish
+                                </Button>
+                            </Grid>
+                            <Grid item xs={2} display="flex" justifyContent="end">
+                                <Button onClick={(event) => {
+                                            handleDeleteList(event, idNamePair._id)
+                                        }} 
+                                        className='sideButtons' variant="outlined"  sx={{ border: '1px solid black', color: 'black', backgroundColor: 'white'  }}>Delete
+                                </Button>
+                            </Grid>
+                            <Grid item xs={2.5} display="flex" justifyContent="end">
+                                <Button onClick={(event) => {
+                                            handleDuplicate(event, idNamePair._id)
+                                        }} 
+                                        className='sideButtons' variant="outlined"  sx={{ border: '1px solid black', color: 'black', backgroundColor: 'white'  }}>
+                                            Duplicate
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    }
+                    {listOpened && store.currentList !== null && store.currentList._id == idNamePair._id &&
+                        <Grid container item spacing={1}>
+                            <Grid item xs={11.64} display="flex" justifyContent="end">
+                                <IconButton style={{height: "100%"}} onClick={(event) => { closeCurrentList(event)}}>
+                                    <KeyboardDoubleArrowUpIcon />
+                                </IconButton>
+                            </Grid>
+                        </Grid>
+                    }
+                    {!(listOpened && store.currentList !== null && store.currentList._id == idNamePair._id) &&
                     <Grid container item spacing={3}>
                         <Grid item xs={6}>
-                            <p style={{height: "100%", fontSize: '8pt'}}>Published: </p>
+                            <p style={{marginLeft: "10px", height: "100%", fontSize: '8pt'}}>Published: </p>
                         </Grid>
                         <Grid item xs={4} fontSize="small">
                             <p style={{height: "100%", fontSize: '8pt'}}>Listens: </p>
@@ -186,6 +263,7 @@ function ListCard(props) {
                             </IconButton>
                         </Grid>
                     </Grid>
+                    }
                 </Grid>
         </ListItem>
 

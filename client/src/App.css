@@ -197,9 +197,12 @@ body {
 .selected-list-card,
 .unselected-list-card {
   /* font-size: 18pt; */
-  margin: 10px;
+  /* margin: 10px; */
+  margin-bottom: 1vh;
+  width: 100%;
+  padding: 0;
   /* padding: 20px; */
-  border-radius: 25px;
+  border-radius: 17px;
 }
 
 .list-card:aria-disabled,
@@ -227,7 +230,7 @@ body {
 
 .list-card-button {
   float: right;
-  transform: scale(2);
+  transform: scale(0.7);
 }
 
 #workspace-home,
