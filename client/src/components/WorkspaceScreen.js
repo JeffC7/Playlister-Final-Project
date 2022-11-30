@@ -70,9 +70,10 @@ function WorkspaceScreen() {
                             alignItems="center"
                             columnSpacing={2}
                         >
-                                <Grid item>
-                                    <AddIcon fontSize='medium'/>
-                                </Grid>
+
+                            <Grid item>
+                                <AddIcon fontSize='medium'/>
+                            </Grid>
                         </Grid>
             </List>
         }

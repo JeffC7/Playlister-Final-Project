@@ -14,6 +14,7 @@ import List from '@mui/material/List';
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button'
+
 /*
     This React component lists all the top5 lists in the UI.
     
@@ -22,11 +23,11 @@ import Button from '@mui/material/Button'
 const HomeScreen = () => {
     const { store } = useContext(GlobalStoreContext);
     const [searchMode, setSearchMode] = useState("personal");
+    const [commentShown, setCommentShown] = useState(false);
 
     useEffect(() => {
         store.loadIdNamePairs();
     }, []);
-
     const handleChange = (event, newAlignment) => {
         setSearchMode(newAlignment);
     };
@@ -34,6 +35,14 @@ const HomeScreen = () => {
     function handleCreateNewList() {
         store.createNewList();
     }
+
+    function handleAddComment(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            store.addComment(store.currentList._id, e.target.value);
+        }
+    }
+
     let listCard = "";
     if (store) {
         listCard = 
@@ -44,6 +53,7 @@ const HomeScreen = () => {
                         key={pair._id}
                         idNamePair={pair}
                         selected={false}
+                        setCommentShown={setCommentShown}
                     />
                 ))
             }
@@ -74,10 +84,37 @@ const HomeScreen = () => {
             <div id="list-selector-side">
                 <div id="list-side-buttons">
                     <Button className='sideButtons' variant="outlined"  sx={{ border: '1px solid black', color: 'black' }}>Player</Button>
-                    <Button className='sideButtons' disabled variant="outlined" sx={{ border: '1px solid black', color: 'black' }}>Comment</Button>
+                    <Button className='sideButtons' 
+                        disabled={store.currentList==null || store.currentList.published==""} 
+                        variant="outlined" sx={{ border: '1px solid black', color: 'black' }} 
+                        onClick={() => {setCommentShown(true)}}>
+                            Comment
+                    </Button>
                 </div>
                 <div id='list-side-content'>
+                    {commentShown &&
+                        <div style={{height: '100%', width: "100%"}}>
+                            <List 
+                                id="playlist-cards" 
+                                sx={{ width: '100%', height: '87.1%', backgroundColor: "white", overflowWrap: "break-word", overflowY: "scroll"}}
+                            >
+                                {
+                                    store.currentList.comments.map((comment, index) => (
+                                        <div style={{ padding: '5px', backgroundColor: "grey", borderRadius: "25px"}}>
+                                            <p>{comment.userName}</p>
+                                            <p>{comment.comment}</p>
+                                        </div>
+                                    )) 
+                                    // <div>
 
+                                        
+                                        // <p>I hate this song</p>
+                                    // </div>
+                                }
+                            </List>
+                            <TextField sx={{ width: '100%', position: "absolute", bottom: "0%", color: "black" }} id="filled-basic" label="Add comment" variant="filled" onKeyPress={handleAddComment}/>
+                        </div>
+                    }
                 </div>
             </div>
             <div id="list-selector-footing">

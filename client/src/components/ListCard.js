@@ -15,6 +15,7 @@ import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp
 import { fontSize } from '@mui/system';
 import WorkspaceScreen from './WorkspaceScreen';
 import Button from '@mui/material/Button'
+import PublishedSongList from './PublishedSongList';
 
 
 /*
@@ -29,7 +30,7 @@ function ListCard(props) {
     const [editActive, setEditActive] = useState(false);
     const [text, setText] = useState("");
     const [listOpened, setListOpened] = useState(false);
-    const { idNamePair, selected } = props;
+    const { idNamePair, selected, setCommentShown } = props;
 
     function handleLoadList(event, id) {
         if (!event.target.disabled) {
@@ -100,13 +101,13 @@ function ListCard(props) {
 
     function openCurrentList(event, id){
         store.setCurrentList(id);
+        setCommentShown(false);
     }
 
     function closeCurrentList(event){
         setListOpened(false);
         store.closeCurrentList();
-        console.log("ddydy");
-        console.log(store.currentList);
+        setCommentShown(false);
         // store.closeCurrentList();
     }
 
@@ -130,7 +131,7 @@ function ListCard(props) {
             id={idNamePair._id}
             key={idNamePair._id}
             sx={{ display: 'flex', p: 1 }}
-            style={{ width: '100%', fontSize: '20pt', border: '1px solid black', backgroundColor: 'Grey', borderRadius: "25px", marginBottom: "1vh" }}
+            style={{ width: '100%', fontSize: '20pt', border: '1px solid black', backgroundColor: 'lightBlue', borderRadius: "25px", marginBottom: "1vh" }}
             button
             // onClick={(event) => {
             //     handleLoadList(event, idNamePair._id)
@@ -190,13 +191,19 @@ function ListCard(props) {
                     {listOpened && store.currentList !== null && store.currentList._id == idNamePair._id &&
                         <Grid container item>
                             <Grid item padding="0" xs={10} fontSize="15pt">
-                                <WorkspaceScreen />
+                                {store.currentList.published === "" &&
+                                    <WorkspaceScreen />
+                                }
+                                {store.currentList.published != "" &&
+                                    <PublishedSongList/>
+                                }
                             </Grid>
 
                         </Grid>
                     }
                     {listOpened && store.currentList !== null && store.currentList._id == idNamePair._id &&
                         <Grid container item spacing={5}>
+                            {store.currentList.published === "" &&
                             <Grid item xs={2} display="flex" justifyContent="end">
                                 <Button 
                                     disabled={!store.canUndo()}
@@ -206,8 +213,10 @@ function ListCard(props) {
                                     variant="outlined"  
                                     sx={{ border: '1px solid black', color: 'black', backgroundColor: 'white' }}>Undo</Button>
                             </Grid>
-                            <Grid item xs={2} display="flex" justifyContent="end">
-                                <Button 
+                            }
+                            {store.currentList.published === "" &&
+                            <Grid item xs={1} display="flex" justifyContent="end">
+                                    <Button 
                                     disabled={!store.canRedo()}
                                     id='redo-button'
                                     onClick={handleRedo} 
@@ -215,7 +224,9 @@ function ListCard(props) {
                                     variant="outlined"  
                                     sx={{ border: '1px solid black', color: 'black', backgroundColor: 'white'  }} >Redo</Button>
                             </Grid>
-                            <Grid item xs={2.5} display="flex" justifyContent="end">
+                            }
+                            {store.currentList.published === "" &&
+                            <Grid item xs={5} display="flex" justifyContent="end">
                                 <Button onClick={(event) => {
                                             handlePublish(event, idNamePair._id)
                                         }} 
@@ -223,14 +234,15 @@ function ListCard(props) {
                                             Publish
                                 </Button>
                             </Grid>
-                            <Grid item xs={2} display="flex" justifyContent="end">
+                            }
+                            <Grid item xs={1} display="flex" justifyContent="start">
                                 <Button onClick={(event) => {
                                             handleDeleteList(event, idNamePair._id)
                                         }} 
                                         className='sideButtons' variant="outlined"  sx={{ border: '1px solid black', color: 'black', backgroundColor: 'white'  }}>Delete
                                 </Button>
                             </Grid>
-                            <Grid item xs={2.5} display="flex" justifyContent="end">
+                            <Grid item xs={2} display="flex" justifyContent="start">
                                 <Button onClick={(event) => {
                                             handleDuplicate(event, idNamePair._id)
                                         }} 
