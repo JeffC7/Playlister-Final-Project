@@ -56,6 +56,9 @@ export const addComment = (id, comment) => {
     })
 }
 
+export const addLike = (id) => api.post(`/addlike/${id}`)
+export const addDislike = (id) => api.post(`/adddislike/${id}`)
+
 const apis = {
     createPlaylist,
     deletePlaylistById,
@@ -65,6 +68,8 @@ const apis = {
     publishPlaylist,
     duplicatePlaylist,
     addComment,
+    addLike,
+    addDislike
 }
 
 export default apis

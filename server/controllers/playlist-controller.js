@@ -136,8 +136,11 @@ getPlaylistPairs = async (req, res) => {
                         let list = playlists[key];
                         let pair = {
                             _id: list._id,
-                            name: list.name
+                            name: list.name,
+                            published: list.published
                         };
+                        if(list.published != "")
+                            pair = {...pair, likes: list.likes.length, dislikes: list.dislikes.length};
                         pairs.push(pair);
                     }
                     return res.status(200).json({ success: true, idNamePairs: pairs })
@@ -241,8 +244,8 @@ publishPlaylist = async (req, res) => {
                 console.log("req.userId: " + req.userId);
                 if (user._id == req.userId) {
                     list.published =  new Date(Date.now()).toDateString().substring(4);
-                    list.likes = 0;
-                    list.dislikes = 0;
+                    list.likes = [];
+                    list.dislikes = [];
                     list.listens = 0;
                     list.comments = [];
                     list
@@ -376,7 +379,7 @@ addComment = async (req, res) => {
                         console.log("SUCCESS!!!");
                         return res.status(200).json({
                             success: true,
-                            comments: list.comments,
+                            playlist: list,
                             message: 'Comment added!',
                         })
                     })
@@ -393,6 +396,93 @@ addComment = async (req, res) => {
     })
 }
 
+addLike = async (req, res) => {
+    const body = req.body;
+    console.log("Increment like: " + JSON.stringify(body));
+
+    Playlist.findOne({ _id: req.params.id }, (err, playlist) => {
+        console.log("playlist found: " + JSON.stringify(playlist));
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'Playlist not found!',
+            })
+        }
+
+        // Add a comment
+        async function asyncAddLike(list) {
+            await User.findOne({ _id: req.userId }, (err, user) => {
+                console.log("HEEEY, I FAILED HERE11")
+                if(!list.dislikes.includes(user.userName) && !list.likes.includes(user.userName)){
+                    console.log("HEEEY, I FAILED HERE")
+                    list.likes.push(user.userName);
+                }
+                console.log("HEEEY, I FAILED HERE2")
+                list
+                    .save()
+                    .then(() => {
+                        console.log("SUCCESS!!!");
+                        return res.status(200).json({
+                            success: true,
+                            playlist: list,
+                            message: 'Comment added!',
+                        })
+                    })
+                    .catch(error => {
+                        console.log("FAILURE: " + JSON.stringify(error));
+                        return res.status(404).json({
+                            error,
+                            message: 'Comment not published!',
+                        })
+                    })
+            });
+        }
+        asyncAddLike(playlist);
+    })
+}
+
+addDislike = async (req, res) => {
+    const body = req.body;
+    console.log("Decrement like: " + JSON.stringify(body));
+
+    Playlist.findOne({ _id: req.params.id }, (err, playlist) => {
+        console.log("playlist found: " + JSON.stringify(playlist));
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'Playlist not found!',
+            })
+        }
+
+        // Add a comment
+        async function asyncAddDislike(list) {
+            await User.findOne({ _id: req.userId }, (err, user) => {
+                if(!list.dislikes.includes(user.userName) && !list.likes.includes(user.userName)){
+                    list.dislikes.push(user.userName);
+                }
+                list
+                    .save()
+                    .then(() => {
+                        console.log("SUCCESS!!!");
+                        return res.status(200).json({
+                            success: true,
+                            playlist: list,
+                            message: 'Comment added!',
+                        })
+                    })
+                    .catch(error => {
+                        console.log("FAILURE: " + JSON.stringify(error));
+                        return res.status(404).json({
+                            error,
+                            message: 'Comment not published!',
+                        })
+                    })
+            });
+        }
+        asyncAddDislike(playlist);
+    })
+}
+
 
 module.exports = {
     createPlaylist,
@@ -404,4 +494,7 @@ module.exports = {
     publishPlaylist,
     duplicatePlaylist,
     addComment,
+    addLike,
+    addDislike, 
+    
 }

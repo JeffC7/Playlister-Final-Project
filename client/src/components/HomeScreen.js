@@ -40,6 +40,7 @@ const HomeScreen = () => {
         if (e.key === 'Enter') {
             e.preventDefault();
             store.addComment(store.currentList._id, e.target.value);
+            e.target.value = "";
         }
     }
 

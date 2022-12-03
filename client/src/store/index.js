@@ -560,6 +560,7 @@ function GlobalStoreContextProvider(props) {
             let response = await api.publishPlaylist(id);
             if (response.data.success) {
                 console.log("success");
+                store.loadIdNamePairs();
             }
         }
         publishList(id);
@@ -594,14 +595,55 @@ function GlobalStoreContextProvider(props) {
             const response = await api.addComment(id, comment);
             console.log("asyncAddComment response: " + response);
             if (response.status === 200) {
-                console.log(response.data.comments);
-
+                console.log(response.data);
+                storeReducer({
+                    type: GlobalStoreActionType.SET_CURRENT_LIST,
+                    payload: response.data.playlist
+                })
             }
             else {
                 console.log("API FAILED TO ADD COMMENT");
             }
         }
         asyncAddComment(id, comment);
+    }
+
+    store.addLike = function (id) {
+        async function asyncAddLike(id) {
+            const response = await api.addLike(id);
+            console.log("asyncAddLike response: " + response);
+            if (response.status === 200) {
+                console.log(response.data);
+                // storeReducer({
+                //     type: GlobalStoreActionType.SET_CURRENT_LIST,
+                //     payload: response.data.playlist
+                // })
+                store.loadIdNamePairs();
+            }
+            else {
+                console.log("API FAILED TO ADD COMMENT");
+            }
+        }
+        asyncAddLike(id);
+    }
+
+    store.addDislike = function (id) {
+        async function asyncAddDislike(id) {
+            const response = await api.addDislike(id);
+            console.log("asyncAddDislike response: " + response);
+            if (response.status === 200) {
+                console.log(response.data);
+                // storeReducer({
+                //     type: GlobalStoreActionType.SET_CURRENT_LIST,
+                //     payload: response.data.playlist
+                // })
+                store.loadIdNamePairs();
+            }
+            else {
+                console.log("API FAILED TO ADD COMMENT");
+            }
+        }
+        asyncAddDislike(id);
     }
     
     return (

@@ -94,11 +94,6 @@ function ListCard(props) {
         store.duplicatePlaylist(id);
     }
 
-    function handleAddComment(event, id){
-        event.stopPropagation();
-        store.addComment(id, "UDYR sucks after reworks");
-    }
-
     function openCurrentList(event, id){
         store.setCurrentList(id);
         setCommentShown(false);
@@ -109,6 +104,16 @@ function ListCard(props) {
         store.closeCurrentList();
         setCommentShown(false);
         // store.closeCurrentList();
+    }
+
+    function addLike(event, id){
+        event.stopPropagation();
+        store.addLike(id);
+    }
+
+    function addDislike(event, id){
+        event.stopPropagation();
+        store.addDislike(id);
     }
 
     function handleUndo() {
@@ -173,15 +178,29 @@ function ListCard(props) {
             </Box> */}
                 <Grid container rowSpacing={0} columnSpacing={{ xs: 1 }}>
                     <Grid container item spacing={3} top="0%">
-                        <Grid item xs={10} fontSize="small">
+                        <Grid item xs={9} fontSize="small">
                             <h3 style={{margin: "0px 10px", fontSize: '20pt'}}>{idNamePair.name}</h3>
                         </Grid>
-                        <IconButton onClick={(event) => {}}>
-                            <ThumbDownIcon style={{marginTop: "10pt", height: "100%"}} fontSize="small" />
-                        </IconButton>
-                        <IconButton onClick={(event) => {}}>
-                            <ThumbUpAltIcon style={{marginTop: "10pt", height: "100%"}}  />
-                        </IconButton>
+                        {idNamePair.published!= "" &&
+                            <IconButton onClick={(event) => {
+                                                    addLike(event, idNamePair._id)
+                                                }}>
+                                <ThumbUpAltIcon style={{marginTop: "10pt", height: "100%"}} />
+                            </IconButton>
+                        }
+                        {idNamePair.published!= "" &&
+                            <p>{idNamePair.likes}</p>
+                        }
+                        {idNamePair.published!= "" &&
+                            <IconButton onClick={(event) => {
+                                                    addDislike(event, idNamePair._id)
+                                                }}>
+                                <ThumbDownIcon style={{marginTop: "10pt", height: "100%"}} fontSize="medium"  />
+                            </IconButton>
+                        }
+                        {idNamePair.published!= "" &&
+                            <p>{idNamePair.dislikes}</p>
+                        }
                     </Grid>
                     <Grid container item spacing={3}>
                         <Grid item padding="0" xs={2} fontSize="small">

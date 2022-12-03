@@ -19,6 +19,8 @@ router.get('/playlists', auth.verify, PlaylistController.getPlaylists)
 router.put('/playlist/:id', auth.verify, PlaylistController.updatePlaylist)
 router.post('/duplicateplaylist/:id', auth.verify, PlaylistController.duplicatePlaylist)
 router.post('/addcomment/:id', auth.verify, PlaylistController.addComment)
+router.post('/addlike/:id', auth.verify, PlaylistController.addLike)
+router.post('/adddislike/:id', auth.verify, PlaylistController.addDislike)
 // router.get('/searchplaylistforuser/:username', auth.verify, PlaylistController.searchPlaylistForUser)
 // router.get('/searchallplaylists/:search', auth.verify, PlaylistController.searchAllPlaylists)
 
