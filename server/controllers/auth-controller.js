@@ -86,6 +86,24 @@ loginUser = async (req, res) => {
     }
 }
 
+guestUser = async (req, res) => {
+    const token = auth.signToken("guest");
+    console.log(token);
+
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: true
+    }).status(200).json({
+        success: true,
+        user: {
+            firstName: "guest",
+            lastName: "guest",  
+            email: "guest"              
+        }
+    })
+}
+
 logoutUser = async (req, res) => {
     res.cookie("token", "", {
         httpOnly: true,
@@ -183,5 +201,6 @@ module.exports = {
     getLoggedIn,
     registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    guestUser
 }

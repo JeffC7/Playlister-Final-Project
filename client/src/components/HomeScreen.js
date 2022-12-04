@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { GlobalStoreContext } from '../store'
+import AuthContext from '../auth'
 import ListCard from './ListCard.js'
 import MUIDeleteModal from './MUIDeleteModal'
 
@@ -21,15 +22,25 @@ import Button from '@mui/material/Button'
     @author McKilla Gorilla
 */
 const HomeScreen = () => {
+    const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
     const [searchMode, setSearchMode] = useState("personal");
     const [commentShown, setCommentShown] = useState(false);
 
+  
     useEffect(() => {
-        store.loadIdNamePairs();
+        if(auth.guest){
+            store.clearAll();
+            setSearchMode("everything");
+        }else{
+            store.loadIdNamePairs();
+        }
     }, []);
+
     const handleChange = (event, newAlignment) => {
-        setSearchMode(newAlignment);
+        if (newAlignment !== null) {
+            setSearchMode(newAlignment);
+        }
     };
 
     function handleCreateNewList() {
@@ -70,7 +81,7 @@ const HomeScreen = () => {
                     onChange={handleChange}
                     aria-label="Platform"
                     >
-                    <ToggleButton value="personal" style={{outlineWidth: '0'}}><HomeIcon /></ToggleButton>
+                    <ToggleButton value="personal"><HomeIcon /></ToggleButton>
                     <ToggleButton value="everything"><GroupsIcon /></ToggleButton>
                     <ToggleButton value="username"><PersonIcon /></ToggleButton>
                 </ToggleButtonGroup>

@@ -13,6 +13,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button'
+import playlister_logo from '../playlister_logo.png'
 
 export default function AppBanner() {
     const { auth } = useContext(AuthContext);
@@ -31,6 +33,10 @@ export default function AppBanner() {
     const handleLogout = () => {
         handleMenuClose();
         auth.logoutUser();
+    }
+
+    const handleGuest = (event) => {
+        auth.guestUser();
     }
 
     const menuId = 'primary-search-account-menu';
@@ -92,19 +98,17 @@ export default function AppBanner() {
     }
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ flexGrow: 2 }}>
             <AppBar position="static">
-                <Toolbar>
-                    <Typography                        
-                        variant="h4"
-                        noWrap
-                        component="div"
-                        sx={{ display: { xs: 'none', sm: 'block' } }}                        
-                    >
-                        <Link style={{ textDecoration: 'none', color: 'white' }} to='/'>⌂</Link>
-                    </Typography>
-                    <Box sx={{ flexGrow: 1 }}>{editToolbar}</Box>
+                <Toolbar  style={{ paddingLeft: '0px'}}>
+                    <Box sx={{ display: {xs:'none', md: 'flex'}}}><img width="25%" height="10%" src={playlister_logo} ></img></Box>
+                    <Box sx={{ flexGrow: 1 }}></Box> 
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                        {!auth.loggedIn && 
+                            <Button variant='primary' onClick={handleGuest}>
+                                Continue as guest
+                            </Button>
+                        }
                         <IconButton
                             size="large"
                             edge="end"

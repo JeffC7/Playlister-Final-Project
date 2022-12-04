@@ -16,7 +16,8 @@ export const AuthActionType = {
 function AuthContextProvider(props) {
     const [auth, setAuth] = useState({
         user: null,
-        loggedIn: false
+        loggedIn: false,
+        guest: false
     });
     const history = useHistory();
 
@@ -49,6 +50,13 @@ function AuthContextProvider(props) {
                 return setAuth({
                     user: payload.user,
                     loggedIn: true
+                })
+            }
+            case AuthActionType.GUEST_USER: {
+                return setAuth({
+                    user: payload.user,
+                    loggedIn: true,
+                    guest: true
                 })
             }
             default:
@@ -87,6 +95,19 @@ function AuthContextProvider(props) {
         if (response.status === 200) {
             authReducer({
                 type: AuthActionType.LOGIN_USER,
+                payload: {
+                    user: response.data.user
+                }
+            })
+            history.push("/");
+        }
+    }
+
+    auth.guestUser = async function() {
+        const response = await api.guestUser();
+        if (response.status === 200) {
+            authReducer({
+                type: AuthActionType.GUEST_USER,
                 payload: {
                     user: response.data.user
                 }

@@ -73,6 +73,19 @@ function GlobalStoreContextProvider(props) {
         const { type, payload } = action;
         switch (type) {
             // LIST UPDATE OF ITS NAME
+            case GlobalStoreActionType.CLEAR: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    idNamePairs: [],
+                    currentList: null,
+                    currentSongIndex: -1,
+                    currentSong: null,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    listIdMarkedForDeletion: null,
+                    listMarkedForDeletion: null
+                });
+            }
             case GlobalStoreActionType.CHANGE_LIST_NAME: {
                 return setStore({
                     currentModal : CurrentModal.NONE,
@@ -645,6 +658,14 @@ function GlobalStoreContextProvider(props) {
         }
         asyncAddDislike(id);
     }
+
+    store.clearAll = function () {
+        storeReducer({
+            type: GlobalStoreActionType.CLEAR,
+            payload: null
+        });
+    }
+
     
     return (
         <GlobalStoreContext.Provider value={{
