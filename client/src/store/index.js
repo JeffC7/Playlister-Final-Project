@@ -16,7 +16,7 @@ import AuthContext from '../auth'
 
 // THIS IS THE CONTEXT WE'LL USE TO SHARE OUR STORE
 export const GlobalStoreContext = createContext({});
-console.log("create GlobalStoreContext");
+// console.log("create GlobalStoreContext");
 
 // THESE ARE ALL THE TYPES OF UPDATES TO OUR GLOBAL
 // DATA STORE STATE THAT CAN BE PROCESSED
@@ -30,7 +30,9 @@ export const GlobalStoreActionType = {
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     EDIT_SONG: "EDIT_SONG",
     REMOVE_SONG: "REMOVE_SONG",
-    HIDE_MODALS: "HIDE_MODALS"
+    HIDE_MODALS: "HIDE_MODALS", 
+    CLEAR: "CLEAR",
+    PLAY_PLAYLIST: "PLAY_PLAYLIST"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -57,15 +59,17 @@ function GlobalStoreContextProvider(props) {
         newListCounter: 0,
         listNameActive: false,
         listIdMarkedForDeletion: null,
-        listMarkedForDeletion: null
+        listMarkedForDeletion: null,
+        currentPlayed: [],
+        currentPlayedSongIndex:  0
     });
     const history = useHistory();
 
-    console.log("inside useGlobalStore");
+    // console.log("inside useGlobalStore");
 
     // SINCE WE'VE WRAPPED THE STORE IN THE AUTH CONTEXT WE CAN ACCESS THE USER HERE
     const { auth } = useContext(AuthContext);
-    console.log("auth: " + auth);
+    // console.log("auth: " + auth);
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
     // HANDLE EVERY TYPE OF STATE CHANGE
@@ -234,6 +238,21 @@ function GlobalStoreContextProvider(props) {
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null
+                });
+            }
+            case GlobalStoreActionType.PLAY_PLAYLIST: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    currentSongIndex: store.currentSongIndex,
+                    currentSong: store.currentSong,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    listIdMarkedForDeletion: null,
+                    listMarkedForDeletion: null,
+                    currentPlayed: payload.playlist,
+                    currentPlayedSongIndex:  0
                 });
             }
             default:
@@ -664,6 +683,42 @@ function GlobalStoreContextProvider(props) {
             type: GlobalStoreActionType.CLEAR,
             payload: null
         });
+    }
+
+    store.searchUsername = function (username) {
+        async function asyncSearchUsername(username) {
+            const response = await api.searchUsername(username);
+            if (response.status === 200) {
+                console.log(response.data);
+                let pairsArray = response.data.idNamePairs;
+                storeReducer({
+                    type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                    payload: pairsArray
+                });
+            }
+            else {
+                console.log("API FAILED TO ADD COMMENT");
+            }
+        }
+        asyncSearchUsername(username);
+    }
+
+    store.getPlaylistSongs = function (id) {
+        async function asyncGetSongs(id) {
+            const response = await api.getSongs(id);
+            if (response.status === 200) {
+                console.log(response.data);
+                let songs = response.data.songs;
+                storeReducer({
+                    type: GlobalStoreActionType.PLAY_PLAYLIST,
+                    payload: songs
+                });
+            }
+            else {
+                console.log("API FAILED TO GET SONGS");
+            }
+        }
+        asyncGetSongs(id);
     }
 
     

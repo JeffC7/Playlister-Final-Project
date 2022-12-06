@@ -58,6 +58,9 @@ export const addComment = (id, comment) => {
 
 export const addLike = (id) => api.post(`/addlike/${id}`)
 export const addDislike = (id) => api.post(`/adddislike/${id}`)
+export const getSongs = (id) => api.get(`/songs/${id}`)
+
+export const searchUsername = (username) => api.get(`/searchplaylistforuser/${username}`)
 
 const apis = {
     createPlaylist,
@@ -69,7 +72,9 @@ const apis = {
     duplicatePlaylist,
     addComment,
     addLike,
-    addDislike
+    addDislike,
+    searchUsername,
+    getSongs
 }
 
 export default apis

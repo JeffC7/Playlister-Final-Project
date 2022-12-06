@@ -137,7 +137,8 @@ getPlaylistPairs = async (req, res) => {
                         let pair = {
                             _id: list._id,
                             name: list.name,
-                            published: list.published
+                            published: list.published,
+                            userName: user.userName
                         };
                         if(list.published != "")
                             pair = {...pair, likes: list.likes.length, dislikes: list.dislikes.length};
@@ -248,6 +249,7 @@ publishPlaylist = async (req, res) => {
                     list.dislikes = [];
                     list.listens = 0;
                     list.comments = [];
+                    list.userName = user.userName;
                     list
                         .save()
                         .then(() => {
@@ -483,6 +485,74 @@ addDislike = async (req, res) => {
     })
 }
 
+searchPlaylistForUser = async(req, res) => {
+    Playlist.find({userName: new RegExp(req.params.username), published: {"$exists" : true, "$ne" : ""}}, (err, playlists) => {
+        console.log("playlists found: " + JSON.stringify(playlists));
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'Error finding playlists for username!',
+            })
+        }
+        let pairs = [];
+        for (let key in playlists) {
+            let list = playlists[key];
+            let pair = {
+                _id: list._id,
+                name: list.name,
+                published: list.published,
+                likes: list.likes.length,
+                dislikes: list.dislikes.length,
+                userName: list.userName
+            };
+            pairs.push(pair);
+        }
+
+        return res.status(200).json({ success: true, idNamePairs: playlists })
+    })
+}
+
+searchPlaylist = async(req, res) => {
+    Playlist.find({name: new RegExp(req.params.search)}, (err, playlists) => {
+        console.log("playlists found: " + JSON.stringify(playlists));
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'Error finding playlists for username!',
+            })
+        }
+        let pairs = [];
+        for (let key in playlists) {
+            let list = playlists[key];
+            let pair = {
+                _id: list._id,
+                name: list.name,
+                published: list.published,
+                likes: list.likes.length,
+                dislikes: list.dislikes.length,
+                userName: list.userName
+            };
+            pairs.push(pair);
+        }
+
+        return res.status(200).json({ success: true, idNamePairs: playlists })
+    })
+}
+
+getSong = async(req, res) => {
+    Playlist.findOne({_id: req.params.id}, (err, playlist) => {
+        console.log("playlist found: " + JSON.stringify(playlist));
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'Error finding playlist for songs',
+            })
+        }
+
+        return res.status(200).json({ success: true, songs: playlist.songs })
+    })
+}
+
 
 module.exports = {
     createPlaylist,
@@ -496,5 +566,7 @@ module.exports = {
     addComment,
     addLike,
     addDislike, 
-    
+    searchPlaylistForUser,
+    searchPlaylist,
+    getSong
 }

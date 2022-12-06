@@ -21,7 +21,8 @@ router.post('/duplicateplaylist/:id', auth.verify, PlaylistController.duplicateP
 router.post('/addcomment/:id', auth.verify, PlaylistController.addComment)
 router.post('/addlike/:id', auth.verify, PlaylistController.addLike)
 router.post('/adddislike/:id', auth.verify, PlaylistController.addDislike)
-// router.get('/searchplaylistforuser/:username', auth.verify, PlaylistController.searchPlaylistForUser)
-// router.get('/searchallplaylists/:search', auth.verify, PlaylistController.searchAllPlaylists)
+router.get('/searchplaylistforuser/:username', auth.verify, PlaylistController.searchPlaylistForUser)
+router.get('/searchplaylist/:search', auth.verify, PlaylistController.searchPlaylist)
+router.get('/songs/:id', auth.verify, PlaylistController.getSong)
 
 module.exports = router

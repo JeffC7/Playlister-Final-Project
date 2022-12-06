@@ -36,6 +36,8 @@ export default function AppBanner() {
     }
 
     const handleGuest = (event) => {
+        console.log("guest button is pressed")
+        event.stopPropagation();
         auth.guestUser();
     }
 
@@ -90,7 +92,7 @@ export default function AppBanner() {
     
     function getAccountMenu(loggedIn) {
         let userInitials = auth.getUserInitials();
-        console.log("userInitials: " + userInitials);
+        // console.log("userInitials: " + userInitials);
         if (loggedIn) 
             return <div>{userInitials}</div>;
         else
@@ -105,7 +107,9 @@ export default function AppBanner() {
                     <Box sx={{ flexGrow: 1 }}></Box> 
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                         {!auth.loggedIn && 
-                            <Button variant='primary' onClick={handleGuest}>
+                            <Button variant='primary' onClick={(event) => {
+                                handleGuest(event)
+                            }}>
                                 Continue as guest
                             </Button>
                         }

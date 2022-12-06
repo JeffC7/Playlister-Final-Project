@@ -19,6 +19,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MenuIcon from '@mui/icons-material/Menu';
 
+import YouTubePlayerExample from './YouTubePlayerExample.js';
 /*
     This React component lists all the top5 lists in the UI.
     
@@ -47,6 +48,9 @@ const HomeScreen = () => {
         if (newAlignment !== null) {
             setSearchMode(newAlignment);
         }
+        if(newAlignment =="personal"){
+            store.loadIdNamePairs();
+        }
     };
 
     function handleCreateNewList() {
@@ -57,6 +61,15 @@ const HomeScreen = () => {
         if (e.key === 'Enter') {
             e.preventDefault();
             store.addComment(store.currentList._id, e.target.value);
+            e.target.value = "";
+        }
+    }
+
+    function handleSearch(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if(searchMode == "username")
+                store.searchUsername(e.target.value);
             e.target.value = "";
         }
     }
@@ -122,7 +135,7 @@ const HomeScreen = () => {
                     <ToggleButton value="everything"><GroupsIcon /></ToggleButton>
                     <ToggleButton value="username"><PersonIcon /></ToggleButton>
                 </ToggleButtonGroup>
-                <TextField style={{marginLeft: "130px", width: "550px"}} id="outlined-basic" label="Search" variant="outlined" />
+                <TextField style={{marginLeft: "130px", width: "550px"}} id="outlined-basic" label="Search" variant="outlined" onKeyPress={handleSearch}/>
                 <p style={{marginLeft: "120px", marginRight:"10px"}}>Sort By:</p>
                 <ToggleButton 
                     size="medium"
@@ -147,7 +160,7 @@ const HomeScreen = () => {
                 <div id="list-side-buttons">
                     <Button className='sideButtons' 
                         variant="outlined" sx={{ border: '1px solid black', color: 'black' }}
-                        
+                        onClick={() => {setCommentShown(false)}}
                         >Player
                     </Button>
                     <Button className='sideButtons' 
@@ -181,6 +194,9 @@ const HomeScreen = () => {
                             <TextField sx={{ width: '100%', position: "absolute", bottom: "0%", color: "black" }} id="filled-basic" label="Add comment" variant="filled" onKeyPress={handleAddComment}/>
                         </div>
                     }
+                    {/* {!commentShown &&
+                        <YouTubePlayerExample />
+                    } */}
                 </div>
             </div>
             <div id="list-selector-footing">

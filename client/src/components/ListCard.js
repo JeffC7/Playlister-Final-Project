@@ -138,9 +138,10 @@ function ListCard(props) {
             sx={{ display: 'flex', p: 1 }}
             style={{ width: '100%', fontSize: '20pt', border: '1px solid black', backgroundColor: 'lightBlue', borderRadius: "25px", marginBottom: "1vh" }}
             button
-            // onClick={(event) => {
-            //     handleLoadList(event, idNamePair._id)
-            // }}
+            onClick={(event) => {
+                event.stopPropagation();
+                store.getPlaylistSongs(idNamePair._id);
+            }}
         >
             {/* <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box> */}
             {/* <Box sx={{ p: 1 }}>
@@ -204,7 +205,7 @@ function ListCard(props) {
                     </Grid>
                     <Grid container item spacing={3}>
                         <Grid item padding="0" xs={2} fontSize="small">
-                            <p style={{margin: "0px 10px", fontSize: '8pt'}}>By: </p>
+                            <p style={{margin: "0px 10px", fontSize: '8pt'}}>By: {idNamePair.userName}</p>
                         </Grid>
                     </Grid>
                     {listOpened && store.currentList !== null && store.currentList._id == idNamePair._id &&
@@ -283,7 +284,7 @@ function ListCard(props) {
                     {!(listOpened && store.currentList !== null && store.currentList._id == idNamePair._id) &&
                     <Grid container item spacing={3}>
                         <Grid item xs={6}>
-                            <p style={{marginLeft: "10px", height: "100%", fontSize: '8pt'}}>Published: </p>
+                            <p style={{marginLeft: "10px", height: "100%", fontSize: '8pt'}}>Published: {idNamePair.published}</p>
                         </Grid>
                         <Grid item xs={4} fontSize="small">
                             <p style={{height: "100%", fontSize: '8pt'}}>Listens: </p>

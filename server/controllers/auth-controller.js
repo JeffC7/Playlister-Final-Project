@@ -88,6 +88,7 @@ loginUser = async (req, res) => {
 
 guestUser = async (req, res) => {
     const token = auth.signToken("guest");
+    console.log("guest is here")
     console.log(token);
 
     res.cookie("token", token, {

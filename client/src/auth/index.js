@@ -3,14 +3,15 @@ import { useHistory } from 'react-router-dom'
 import api from './auth-request-api'
 
 const AuthContext = createContext();
-console.log("create AuthContext: " + AuthContext);
+// console.log("create AuthContext: " + AuthContext);
 
 // THESE ARE ALL THE TYPES OF UPDATES TO OUR AUTH STATE THAT CAN BE PROCESSED
 export const AuthActionType = {
     GET_LOGGED_IN: "GET_LOGGED_IN",
     LOGIN_USER: "LOGIN_USER",
     LOGOUT_USER: "LOGOUT_USER",
-    REGISTER_USER: "REGISTER_USER"
+    REGISTER_USER: "REGISTER_USER",
+    GUEST_USER: "GUEST_USER"
 }
 
 function AuthContextProvider(props) {
@@ -31,19 +32,21 @@ function AuthContextProvider(props) {
             case AuthActionType.GET_LOGGED_IN: {
                 return setAuth({
                     user: payload.user,
-                    loggedIn: payload.loggedIn
+                    loggedIn: payload.loggedIn,
+                    guest: auth.guest
                 });
             }
             case AuthActionType.LOGIN_USER: {
                 return setAuth({
                     user: payload.user,
-                    loggedIn: true
+                    loggedIn: true,
+                    guest: false
                 })
             }
             case AuthActionType.LOGOUT_USER: {
                 return setAuth({
                     user: null,
-                    loggedIn: false
+                    loggedIn: false,
                 })
             }
             case AuthActionType.REGISTER_USER: {
@@ -133,7 +136,7 @@ function AuthContextProvider(props) {
             initials += auth.user.firstName.charAt(0);
             initials += auth.user.lastName.charAt(0);
         }
-        console.log("user initials: " + initials);
+        // console.log("user initials: " + initials);
         return initials;
     }
 
