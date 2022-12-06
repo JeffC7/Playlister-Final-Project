@@ -102,7 +102,7 @@ export default function AppBanner() {
     return (
         <Box sx={{ flexGrow: 2 }}>
             <AppBar position="static">
-                <Toolbar  style={{ paddingLeft: '0px'}}>
+                <Toolbar  style={{ backgroundColor: "skyblue", paddingLeft: '0px'}}>
                     <Box sx={{ display: {xs:'none', md: 'flex'}}}><img width="25%" height="10%" src={playlister_logo} ></img></Box>
                     <Box sx={{ flexGrow: 1 }}></Box> 
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>

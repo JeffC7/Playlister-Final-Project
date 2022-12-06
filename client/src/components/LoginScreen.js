@@ -102,6 +102,7 @@ export default function LoginScreen() {
                             label="Remember me"
                         />
                         <Button
+                            style={{backgroundColor: "skyblue"}}
                             type="submit"
                             fullWidth
                             variant="contained"

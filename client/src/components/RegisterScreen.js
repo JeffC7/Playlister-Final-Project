@@ -124,6 +124,7 @@ export default function RegisterScreen() {
                             </Grid>
                         </Grid>
                         <Button
+                            style={{backgroundColor: "skyblue"}}
                             type="submit"
                             fullWidth
                             variant="contained"

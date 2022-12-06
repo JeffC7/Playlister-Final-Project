@@ -136,7 +136,7 @@ function ListCard(props) {
             id={idNamePair._id}
             key={idNamePair._id}
             sx={{ display: 'flex', p: 1 }}
-            style={{ width: '100%', fontSize: '20pt', border: '1px solid black', backgroundColor: 'lightBlue', borderRadius: "25px", marginBottom: "1vh" }}
+            style={{ width: '100%', fontSize: '20pt', border: '1px solid black', backgroundColor: '#A4DDED', borderRadius: "20px", marginBottom: "1vh" }}
             button
             onClick={(event) => {
                 event.stopPropagation();

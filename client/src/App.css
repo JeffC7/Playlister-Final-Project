@@ -56,7 +56,7 @@ body {
 #splash-screen {
   display: flex;
   flex-direction: column;
-  background-image: linear-gradient(to bottom, white, royalblue);
+  background-image: linear-gradient(to bottom, white, skyblue);
   color: white;
   border-color: black;
   border-width: 2px;
