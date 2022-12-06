@@ -15,6 +15,9 @@ import List from '@mui/material/List';
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button'
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import MenuIcon from '@mui/icons-material/Menu';
 
 /*
     This React component lists all the top5 lists in the UI.
@@ -26,7 +29,10 @@ const HomeScreen = () => {
     const { store } = useContext(GlobalStoreContext);
     const [searchMode, setSearchMode] = useState("personal");
     const [commentShown, setCommentShown] = useState(false);
-
+    
+    // what i added
+    const [anchorEl, setAnchorEl] = useState(null);
+    const isMenuOpen = Boolean(anchorEl);
   
     useEffect(() => {
         if(auth.guest){
@@ -55,6 +61,37 @@ const HomeScreen = () => {
         }
     }
 
+    // what i added
+    const handleSortByMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+    const menuId = 'primary-search-account-menu';
+    const sortByMenu = (
+        <Menu
+            anchorEl={anchorEl}
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            id={menuId}
+            keepMounted
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            open={isMenuOpen}
+            onClose={handleMenuClose}
+        >
+            <MenuItem onClick={handleMenuClose}>Sort1</MenuItem>
+            <MenuItem onClick={handleMenuClose}>Sort2</MenuItem>
+        </Menu>
+    );
+
     let listCard = "";
     if (store) {
         listCard = 
@@ -74,7 +111,7 @@ const HomeScreen = () => {
     return (
         <div id="playlist-selector">
             <div id="list-selector-heading">
-                <ToggleButtonGroup
+                <ToggleButtonGroup style={{marginLeft: "40px"}}
                     color="primary"
                     value={searchMode}
                     exclusive
@@ -85,7 +122,20 @@ const HomeScreen = () => {
                     <ToggleButton value="everything"><GroupsIcon /></ToggleButton>
                     <ToggleButton value="username"><PersonIcon /></ToggleButton>
                 </ToggleButtonGroup>
-                <TextField id="outlined-basic" label="Search" variant="outlined" />
+                <TextField style={{marginLeft: "130px", width: "550px"}} id="outlined-basic" label="Search" variant="outlined" />
+                <p style={{marginLeft: "120px", marginRight:"10px"}}>Sort By:</p>
+                <ToggleButton 
+                    size="medium"
+                    edge="end"
+                    aria-label="sort by menu"
+                    aria-controls={menuId}
+                    aria-haspopup="true"
+                    onClick={handleSortByMenuOpen}
+                    color="primary"
+                >
+                    <MenuIcon></MenuIcon>
+                </ToggleButton>
+                {sortByMenu}
             </div>
             <div id="list-selector-list">
                 {
@@ -95,7 +145,11 @@ const HomeScreen = () => {
             </div>
             <div id="list-selector-side">
                 <div id="list-side-buttons">
-                    <Button className='sideButtons' variant="outlined"  sx={{ border: '1px solid black', color: 'black' }}>Player</Button>
+                    <Button className='sideButtons' 
+                        variant="outlined" sx={{ border: '1px solid black', color: 'black' }}
+                        
+                        >Player
+                    </Button>
                     <Button className='sideButtons' 
                         disabled={store.currentList==null || store.currentList.published==""} 
                         variant="outlined" sx={{ border: '1px solid black', color: 'black' }} 
