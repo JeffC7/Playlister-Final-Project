@@ -18,6 +18,8 @@ import Button from '@mui/material/Button'
 import PublishedSongList from './PublishedSongList';
 
 
+
+
 /*
     This is a card in our list of top 5 lists. It lets select
     a list for editing and it has controls for changing its 
@@ -100,6 +102,7 @@ function ListCard(props) {
     }
 
     function closeCurrentList(event){
+        event.stopPropagation();
         setListOpened(false);
         store.closeCurrentList();
         setCommentShown(false);
@@ -182,11 +185,16 @@ function ListCard(props) {
                         <Grid item xs={9} fontSize="small">
                             <h3 style={{margin: "0px 10px", fontSize: '20pt'}}>{idNamePair.name}</h3>
                         </Grid>
+                        {idNamePair.published == "" &&
+                            <IconButton onClick={handleToggleEdit} aria-label='edit'>
+                                <EditIcon style={{marginTop: "10pt", marginLeft: "90pt", height: "100%", fontSize: "30px"}} />
+                            </IconButton>
+                        }
                         {idNamePair.published!= "" &&
                             <IconButton onClick={(event) => {
                                                     addLike(event, idNamePair._id)
                                                 }}>
-                                <ThumbUpAltIcon style={{marginTop: "10pt", height: "100%"}} />
+                                <ThumbUpAltIcon style={{marginTop: "10pt", marginLeft: "35pt", height: "100%"}} />
                             </IconButton>
                         }
                         {idNamePair.published!= "" &&
@@ -205,7 +213,7 @@ function ListCard(props) {
                     </Grid>
                     <Grid container item spacing={3}>
                         <Grid item padding="0" xs={2} fontSize="small">
-                            <p style={{margin: "0px 10px", fontSize: '8pt'}}>By: {idNamePair.userName}</p>
+                            <p style={{margin: "0px 10px", fontSize: '10pt'}}>By: {idNamePair.userName}</p>
                         </Grid>
                     </Grid>
                     {listOpened && store.currentList !== null && store.currentList._id == idNamePair._id &&
@@ -221,20 +229,17 @@ function ListCard(props) {
 
                         </Grid>
                     }
-                    {listOpened && store.currentList !== null && store.currentList._id == idNamePair._id &&
+                    {listOpened && store.currentList !== null && store.currentList.published === "" && store.currentList._id == idNamePair._id &&
                         <Grid container item spacing={5}>
-                            {store.currentList.published === "" &&
                             <Grid item xs={2} display="flex" justifyContent="end">
                                 <Button 
                                     disabled={!store.canUndo()}
-                                    id='add-song-button'
+                                    id='undo-button'
                                     onClick={handleUndo}
                                     className='sideButtons' 
                                     variant="outlined"  
                                     sx={{ border: '1px solid black', color: 'black', backgroundColor: 'white' }}>Undo</Button>
-                            </Grid>
-                            }
-                            {store.currentList.published === "" &&
+                            </Grid>                            
                             <Grid item xs={1} display="flex" justifyContent="end">
                                     <Button 
                                     disabled={!store.canRedo()}
@@ -244,8 +249,6 @@ function ListCard(props) {
                                     variant="outlined"  
                                     sx={{ border: '1px solid black', color: 'black', backgroundColor: 'white'  }} >Redo</Button>
                             </Grid>
-                            }
-                            {store.currentList.published === "" &&
                             <Grid item xs={5} display="flex" justifyContent="end">
                                 <Button onClick={(event) => {
                                             handlePublish(event, idNamePair._id)
@@ -254,15 +257,33 @@ function ListCard(props) {
                                             Publish
                                 </Button>
                             </Grid>
-                            }
-                            <Grid item xs={1} display="flex" justifyContent="start">
+                            <Grid item xs={1} display="flex" justifyContent="start" style={{paddingLeft:"8px"}}>
                                 <Button onClick={(event) => {
                                             handleDeleteList(event, idNamePair._id)
                                         }} 
                                         className='sideButtons' variant="outlined"  sx={{ border: '1px solid black', color: 'black', backgroundColor: 'white'  }}>Delete
                                 </Button>
                             </Grid>
-                            <Grid item xs={2} display="flex" justifyContent="start">
+                            <Grid item xs={2} display="flex" justifyContent="start" style={{paddingLeft: "10px"}}>
+                                <Button onClick={(event) => {
+                                            handleDuplicate(event, idNamePair._id)
+                                        }} 
+                                        className='sideButtons' variant="outlined"  sx={{ border: '1px solid black', color: 'black', backgroundColor: 'white'  }}>
+                                            Duplicate
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    }
+                    {listOpened && store.currentList !== null && store.currentList.published != "" && store.currentList._id == idNamePair._id &&
+                        <Grid container item spacing={5} justifyContent="end" marginRight="85px">
+                            <Grid item xs={1} display="flex" marginTop="20px">
+                                <Button onClick={(event) => {
+                                            handleDeleteList(event, idNamePair._id)
+                                        }} 
+                                        className='sideButtons' variant="outlined"  sx={{ border: '1px solid black', color: 'black', backgroundColor: 'white'  }}>Delete
+                                </Button>
+                            </Grid>
+                            <Grid item xs={2} display="flex" marginTop="20px">
                                 <Button onClick={(event) => {
                                             handleDuplicate(event, idNamePair._id)
                                         }} 
@@ -281,21 +302,27 @@ function ListCard(props) {
                             </Grid>
                         </Grid>
                     }
-                    {!(listOpened && store.currentList !== null && store.currentList._id == idNamePair._id) &&
+                    
                     <Grid container item spacing={3}>
                         <Grid item xs={6}>
-                            <p style={{marginLeft: "10px", height: "100%", fontSize: '8pt'}}>Published: {idNamePair.published}</p>
+                            {idNamePair.published != "" &&    
+                                <p style={{marginLeft: "10px", height: "100%", fontSize: '10pt'}}>Published: {idNamePair.published}</p>
+                            }      
                         </Grid>
                         <Grid item xs={4} fontSize="small">
-                            <p style={{height: "100%", fontSize: '8pt'}}>Listens: </p>
+                            {idNamePair.published != "" &&
+                                <p style={{height: "100%", fontSize: '10pt'}}>Listens: </p>
+                            }
                         </Grid>
+                        {!(listOpened && store.currentList !== null && store.currentList._id == idNamePair._id) &&
                         <Grid item xs={2} display="flex" alignItems="center" justifyContent="center">
                             <IconButton style={{height: "100%"}} onClick={(event) => { openCurrentList(event, idNamePair._id)}}>
                                 <KeyboardDoubleArrowDownIcon />
                             </IconButton>
                         </Grid>
+                        }
                     </Grid>
-                    }
+                    
                 </Grid>
         </ListItem>
 

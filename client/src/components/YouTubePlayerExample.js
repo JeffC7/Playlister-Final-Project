@@ -1,6 +1,6 @@
 // import React from 'react';
 import YouTube from 'react-youtube';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { GlobalStoreContext } from '../store'
 
 
@@ -11,38 +11,39 @@ export default function YouTubePlayerExample() {
     // FROM ONE SONG TO THE NEXT
 
     const { store } = useContext(GlobalStoreContext);
-    // THIS HAS THE YOUTUBE IDS FOR THE SONGS IN OUR PLAYLIST
-    let playlist = store.currentPlayed;
+    const [play, setPlay] = useState(null);
 
-    // THIS IS THE INDEX OF THE SONG CURRENTLY IN USE IN THE PLAYLIST
-    let currentSong = 0;
+    useEffect(() => {
+        if(play!=null){
+            if(store.playVideo){
+                play.playVideo();
+            } else {
+                play.pauseVideo();
+            }
+        }
+    }, [store.playVideo])
 
     const playerOptions = {
         height: '350',
-        width: '455',
+        width: '100%',
         playerVars: {
             // https://developers.google.com/youtube/player_parameters
-            autoplay: 0,
+            autoplay: 1,
         },
     };
 
     // THIS FUNCTION LOADS THE CURRENT SONG INTO
     // THE PLAYER AND PLAYS IT
     function loadAndPlayCurrentSong(player) {
-        let song = playlist[currentSong];
-        //player.loadVideoById(song);
-       // player.playVideo();
-    }
-
-    // THIS FUNCTION INCREMENTS THE PLAYLIST SONG TO THE NEXT ONE
-    function incSong() {
-        currentSong++;
-        currentSong = currentSong % playlist.length;
+        let song = store.currentPlayed.songs[store.currentPlayedSongIndex].youTubeId;
+        player.loadVideoById(song);
+        player.playVideo();
     }
 
     function onPlayerReady(event) {
         loadAndPlayCurrentSong(event.target);
-        //event.target.playVideo();
+        event.target.playVideo();
+        setPlay(event.target);
     }
 
     // THIS IS OUR EVENT HANDLER FOR WHEN THE YOUTUBE PLAYER'S STATE
@@ -58,7 +59,7 @@ export default function YouTubePlayerExample() {
         } else if (playerStatus === 0) {
             // THE VIDEO HAS COMPLETED PLAYING
             console.log("0 Video ended");
-            incSong();
+            store.incSong();
             loadAndPlayCurrentSong(player);
         } else if (playerStatus === 1) {
             // THE VIDEO IS PLAYED
@@ -76,7 +77,7 @@ export default function YouTubePlayerExample() {
     }
 
     return (<YouTube
-        videoId={playlist[currentSong]}
+        videoId={store.currentPlayed.songs[store.currentPlayedSongIndex].youTubeId}
         opts={playerOptions}
         onReady={onPlayerReady}
         onStateChange={onPlayerStateChange} />);

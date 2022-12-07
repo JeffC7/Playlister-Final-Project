@@ -18,8 +18,19 @@ import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MenuIcon from '@mui/icons-material/Menu';
+import Grid from '@mui/material/Grid';
 
 import YouTubePlayerExample from './YouTubePlayerExample.js';
+import YouTube from 'react-youtube';
+
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
+import FastForwardIcon from '@mui/icons-material/FastForward';
+import FastRewindIcon from '@mui/icons-material/FastRewind';
+
+
+import MUIEditSongModal from './MUIEditSongModal'
+import MUIRemoveSongModal from './MUIRemoveSongModal'
 /*
     This React component lists all the top5 lists in the UI.
     
@@ -34,6 +45,8 @@ const HomeScreen = () => {
     // what i added
     const [anchorEl, setAnchorEl] = useState(null);
     const isMenuOpen = Boolean(anchorEl);
+
+    let modalJSX = "";
   
     useEffect(() => {
         if(auth.guest){
@@ -49,6 +62,8 @@ const HomeScreen = () => {
             setSearchMode(newAlignment);
         }
         if(newAlignment =="personal"){
+            store.loadIdNamePairs();
+        } else if (newAlignment == "everything"){
             store.loadIdNamePairs();
         }
     };
@@ -70,7 +85,58 @@ const HomeScreen = () => {
             e.preventDefault();
             if(searchMode == "username")
                 store.searchUsername(e.target.value);
+            else if (searchMode == "everything"){
+                store.searchAll(e.target.value);
+            }
             e.target.value = "";
+        }
+    }
+
+    const playerOptions = {
+        height: '350',
+        width: '100%',
+        playerVars: {
+            // https://developers.google.com/youtube/player_parameters
+            autoplay: 0,
+        },
+    };
+
+    // THIS FUNCTION LOADS THE CURRENT SONG INTO
+    // THE PLAYER AND PLAYS IT
+    function loadAndPlayCurrentSong(player) {
+        let song = store.currentPlayed.songs[store.currentPlayedSongIndex].youTubeId;
+        //player.loadVideoById(song);
+       // player.playVideo();
+    }
+
+    function onPlayerReady(event) {
+        loadAndPlayCurrentSong(event.target);
+        //event.target.playVideo();
+    }
+
+    function onPlayerStateChange(event) {
+        let playerStatus = event.data;
+        let player = event.target;
+        if (playerStatus === -1) {
+            // VIDEO UNSTARTED
+            console.log("-1 Video unstarted");
+        } else if (playerStatus === 0) {
+            // THE VIDEO HAS COMPLETED PLAYING
+            console.log("0 Video ended");
+            store.incSong();
+            store.loadAndPlayCurrentSong(player);
+        } else if (playerStatus === 1) {
+            // THE VIDEO IS PLAYED
+            console.log("1 Video played");
+        } else if (playerStatus === 2) {
+            // THE VIDEO IS PAUSED
+            console.log("2 Video paused");
+        } else if (playerStatus === 3) {
+            // THE VIDEO IS BUFFERING
+            console.log("3 Video buffering");
+        } else if (playerStatus === 5) {
+            // THE VIDEO HAS BEEN CUED
+            console.log("5 Video cued");
         }
     }
 
@@ -121,6 +187,12 @@ const HomeScreen = () => {
             }
             </List>;
     }
+    if (store && store.isEditSongModalOpen()) {
+        modalJSX = <MUIEditSongModal />;
+    }
+    else if (store && store.isRemoveSongModalOpen()) {
+        modalJSX = <MUIRemoveSongModal />;
+    }
     return (
         <div id="playlist-selector">
             <div id="list-selector-heading">
@@ -135,8 +207,8 @@ const HomeScreen = () => {
                     <ToggleButton value="everything"><GroupsIcon /></ToggleButton>
                     <ToggleButton value="username"><PersonIcon /></ToggleButton>
                 </ToggleButtonGroup>
-                <TextField style={{marginLeft: "130px", width: "550px"}} id="outlined-basic" label="Search" variant="outlined" onKeyPress={handleSearch}/>
-                <p style={{marginLeft: "120px", marginRight:"10px"}}>Sort By:</p>
+                <TextField style={{marginLeft: "260px", width: "600px"}} id="outlined-basic" label="Search" variant="outlined" onKeyPress={handleSearch}/>
+                <p style={{marginLeft: "340px", marginRight:"10px"}}>Sort By:</p>
                 <ToggleButton 
                     size="medium"
                     edge="end"
@@ -194,9 +266,42 @@ const HomeScreen = () => {
                             <TextField sx={{ width: '100%', position: "absolute", bottom: "0%", color: "black" }} id="filled-basic" label="Add comment" variant="filled" onKeyPress={handleAddComment}/>
                         </div>
                     }
-                    {/* {!commentShown &&
-                        <YouTubePlayerExample />
-                    } */}
+                    {!commentShown && (store.currentPlayed != null && store.currentPlayed.songs.length !=0) &&
+                        <div>
+                            <YouTubePlayerExample/>
+                            <div className ="np">Now Playing</div>
+                            <div className = "player-details">
+                                Playlist: {store.currentPlayed.name} <br></br>
+                                Song #: {store.currentPlayedSongIndex + 1} <br></br>
+                                Title: {store.currentPlayed.songs[store.currentPlayedSongIndex].title} <br></br>
+                                Artist: {store.currentPlayed.songs[store.currentPlayedSongIndex].artist}
+                            </div>
+
+                            <Grid container item spacing={5} justifyContent="center">
+                                <Grid item xs={2} display="flex" justifyContent="end" onClick={store.decSong}>
+                                    <IconButton  aria-label='edit'>
+                                        <FastRewindIcon fontSize='large'/>
+                                    </IconButton>
+                                </Grid>                            
+                                <Grid item xs={2} display="flex" justifyContent="end">
+                                    <IconButton  aria-label='edit' onClick={store.pauseVideoF}>
+                                        <PauseIcon fontSize='large'/>
+                                    </IconButton>
+                                </Grid>
+                                <Grid item xs={2} display="flex" justifyContent="end">
+                                    <IconButton aria-label='edit' onClick={store.playVideoF}>
+                                        <PlayArrowIcon  />
+                                    </IconButton>
+                                </Grid>
+                                <Grid item xs={2} display="flex" justifyContent="end">
+                                    <IconButton aria-label='edit'>
+                                        <FastForwardIcon fontSize='large' onClick={store.incSong}/>
+                                    </IconButton>
+                                </Grid>
+                            </Grid>
+
+                        </div>
+                    }
                 </div>
             </div>
             <div id="list-selector-footing">
@@ -205,6 +310,7 @@ const HomeScreen = () => {
                 </IconButton>
                 <Typography variant="h4">Your Lists</Typography>
             </div>
+            { modalJSX }
         </div>)
 }
 

@@ -76,8 +76,7 @@ function WorkspaceScreen() {
                             </Grid>
                         </Grid>
             </List>
-        }
-        { modalJSX }      
+        }   
         </Box>
     )
 }

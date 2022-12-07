@@ -26,7 +26,8 @@ function PublishedSongList({published}) {
         <Box>
             <List 
                 id="playlist-cards" 
-                sx={{ width: '100%', marginLeft: '2vw', borderRadius: "25px", backgroundColor: "white"}}
+                sx={{ width: '100%', marginLeft: '2vw', borderRadius: "25px", backgroundColor: "#FEC8D8"}}
+                display="flex"
             >
                 {
                     store.currentList.songs.map((song, index) => (

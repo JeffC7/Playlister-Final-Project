@@ -42,6 +42,7 @@ function SongCard(props) {
     }
     function handleClick(event) {
         // DOUBLE CLICK IS FOR SONG EDITING
+        event.stopPropagation();
         if (event.detail === 2) {
             store.showEditSongModal(index, song);
         }
@@ -67,13 +68,12 @@ function SongCard(props) {
             columnSpacing={2}
         >
                 <Grid item>
-                {index + 1}.
-                <a
+                <p
                     id={'song-' + index + '-link'}
                     className="song-link"
-                    href={"https://www.youtube.com/watch?v=" + song.youTubeId}>
-                    {song.title} by {song.artist}
-                </a>
+                >
+                    {index + 1}. {song.title} by {song.artist}
+                </p>
 
                 </Grid>
                 <Grid item>
