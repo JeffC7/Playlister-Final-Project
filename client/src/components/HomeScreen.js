@@ -49,8 +49,8 @@ const HomeScreen = () => {
     let modalJSX = "";
   
     useEffect(() => {
+        store.clearAll();
         if(auth.guest){
-            store.clearAll();
             setSearchMode("everything");
         }else{
             store.loadIdNamePairs();
@@ -64,12 +64,15 @@ const HomeScreen = () => {
         if(newAlignment =="personal"){
             store.loadIdNamePairs();
         } else if (newAlignment == "everything"){
-            store.loadIdNamePairs();
+            store.setEmptyIdPairs();
+        } else if (newAlignment == "username"){
+            store.setEmptyIdPairs();
         }
     };
 
     function handleCreateNewList() {
-        store.createNewList();
+        if(!auth.guest)
+            store.createNewList();
     }
 
     function handleAddComment(e) {
@@ -87,56 +90,10 @@ const HomeScreen = () => {
                 store.searchUsername(e.target.value);
             else if (searchMode == "everything"){
                 store.searchAll(e.target.value);
+            } else if (searchMode == "personal"){
+                store.searchPersonal(e.target.value);
             }
             e.target.value = "";
-        }
-    }
-
-    const playerOptions = {
-        height: '350',
-        width: '100%',
-        playerVars: {
-            // https://developers.google.com/youtube/player_parameters
-            autoplay: 0,
-        },
-    };
-
-    // THIS FUNCTION LOADS THE CURRENT SONG INTO
-    // THE PLAYER AND PLAYS IT
-    function loadAndPlayCurrentSong(player) {
-        let song = store.currentPlayed.songs[store.currentPlayedSongIndex].youTubeId;
-        //player.loadVideoById(song);
-       // player.playVideo();
-    }
-
-    function onPlayerReady(event) {
-        loadAndPlayCurrentSong(event.target);
-        //event.target.playVideo();
-    }
-
-    function onPlayerStateChange(event) {
-        let playerStatus = event.data;
-        let player = event.target;
-        if (playerStatus === -1) {
-            // VIDEO UNSTARTED
-            console.log("-1 Video unstarted");
-        } else if (playerStatus === 0) {
-            // THE VIDEO HAS COMPLETED PLAYING
-            console.log("0 Video ended");
-            store.incSong();
-            store.loadAndPlayCurrentSong(player);
-        } else if (playerStatus === 1) {
-            // THE VIDEO IS PLAYED
-            console.log("1 Video played");
-        } else if (playerStatus === 2) {
-            // THE VIDEO IS PAUSED
-            console.log("2 Video paused");
-        } else if (playerStatus === 3) {
-            // THE VIDEO IS BUFFERING
-            console.log("3 Video buffering");
-        } else if (playerStatus === 5) {
-            // THE VIDEO HAS BEEN CUED
-            console.log("5 Video cued");
         }
     }
 
@@ -166,8 +123,26 @@ const HomeScreen = () => {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleMenuClose}>Sort1</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Sort2</MenuItem>
+            <MenuItem onClick={() => {
+                handleMenuClose();
+                store.setSortMethod("NAME");
+                }}>Name (A-Z)</MenuItem>
+            <MenuItem onClick={() => {
+                handleMenuClose();
+                store.setSortMethod("PUBLISHED");
+                }}>Publish Date (Newest) </MenuItem>
+            <MenuItem onClick={() => {
+                handleMenuClose();
+                store.setSortMethod("LISTENS");
+                }}>Listens (High-Low)</MenuItem>
+            <MenuItem onClick={() => {
+                handleMenuClose();
+                store.setSortMethod("LIKES");
+                }}>Likes (High-Low)</MenuItem>
+            <MenuItem onClick={() => {
+                handleMenuClose();
+                store.setSortMethod("DISLIKES");
+                }}>Dislikes (High-Low)</MenuItem>
         </Menu>
     );
 
@@ -236,7 +211,7 @@ const HomeScreen = () => {
                         >Player
                     </Button>
                     <Button className='sideButtons' 
-                        disabled={store.currentList==null || store.currentList.published==""} 
+                        disabled={!store.currentList || store.currentList.published==""} 
                         variant="outlined" sx={{ border: '1px solid black', color: 'black' }} 
                         onClick={() => {setCommentShown(true)}}>
                             Comment

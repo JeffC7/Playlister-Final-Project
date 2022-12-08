@@ -16,6 +16,7 @@ import { fontSize } from '@mui/system';
 import WorkspaceScreen from './WorkspaceScreen';
 import Button from '@mui/material/Button'
 import PublishedSongList from './PublishedSongList';
+import AuthContext from '../auth';
 
 
 
@@ -29,6 +30,7 @@ import PublishedSongList from './PublishedSongList';
 */
 function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
     const [editActive, setEditActive] = useState(false);
     const [text, setText] = useState("");
     const [listOpened, setListOpened] = useState(false);
@@ -111,12 +113,14 @@ function ListCard(props) {
 
     function addLike(event, id){
         event.stopPropagation();
-        store.addLike(id);
+        if(!auth.guest)
+            store.addLike(id);
     }
 
     function addDislike(event, id){
         event.stopPropagation();
-        store.addDislike(id);
+        if(!auth.guest)
+            store.addDislike(id);
     }
 
     function handleUndo() {
@@ -186,25 +190,25 @@ function ListCard(props) {
                             <h3 style={{margin: "0px 10px", fontSize: '20pt'}}>{idNamePair.name}</h3>
                         </Grid>
                         {idNamePair.published == "" &&
-                            <IconButton onClick={handleToggleEdit} aria-label='edit'>
-                                <EditIcon style={{marginTop: "10pt", marginLeft: "90pt", height: "100%", fontSize: "30px"}} />
+                            <IconButton onClick={handleToggleEdit} aria-label='edit' style={{marginTop: "10pt", marginLeft: "95pt", height: "100%", fontSize: "30px"}}>
+                                <EditIcon/>
                             </IconButton>
                         }
                         {idNamePair.published!= "" &&
-                            <IconButton onClick={(event) => {
+                            <IconButton style={{marginTop: "2pt", marginLeft: "35pt"}} onClick={(event) => {
                                                     addLike(event, idNamePair._id)
                                                 }}>
-                                <ThumbUpAltIcon style={{marginTop: "10pt", marginLeft: "35pt", height: "100%"}} />
+                                <ThumbUpAltIcon />
                             </IconButton>
                         }
                         {idNamePair.published!= "" &&
                             <p>{idNamePair.likes}</p>
                         }
                         {idNamePair.published!= "" &&
-                            <IconButton onClick={(event) => {
+                            <IconButton style={{marginTop: "2pt"}} fontSize="medium" onClick={(event) => {
                                                     addDislike(event, idNamePair._id)
                                                 }}>
-                                <ThumbDownIcon style={{marginTop: "10pt", height: "100%"}} fontSize="medium"  />
+                                <ThumbDownIcon />
                             </IconButton>
                         }
                         {idNamePair.published!= "" &&

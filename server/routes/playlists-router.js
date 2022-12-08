@@ -23,6 +23,7 @@ router.post('/addlike/:id', auth.verify, PlaylistController.addLike)
 router.post('/adddislike/:id', auth.verify, PlaylistController.addDislike)
 router.get('/searchplaylistforuser/:username', auth.verify, PlaylistController.searchPlaylistForUser)
 router.get('/searchplaylist/:search', auth.verify, PlaylistController.searchPlaylist)
+router.get('/searchpersonalplaylist/:search', auth.verify, PlaylistController.searchPlaylist)
 router.get('/songs/:id', auth.verify, PlaylistController.getSong)
 
 module.exports = router

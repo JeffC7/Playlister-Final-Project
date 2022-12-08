@@ -62,6 +62,7 @@ export const getSongs = (id) => api.get(`/songs/${id}`)
 
 export const searchUsername = (username) => api.get(`/searchplaylistforuser/${username}`)
 export const searchAll = (search) => api.get(`/searchplaylist/${search}`)
+export const searchPersonal = (search) => api.get(`/searchpersonalplaylist/${search}`)
 
 const apis = {
     createPlaylist,
@@ -76,7 +77,8 @@ const apis = {
     addDislike,
     searchUsername,
     getSongs,
-    searchAll
+    searchAll,
+    searchPersonal
 }
 
 export default apis
